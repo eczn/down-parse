@@ -1,5 +1,4 @@
-const fs = require('then-fs')
-    , parse = require('./parse')
+const parse = require('./parse')
     , render = require('./render')
 
 let mdp = text => render(parse(text)); 
