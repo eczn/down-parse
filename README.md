@@ -1,17 +1,17 @@
-# m-d-p 
+# down-parse 
 
 m-d-p is a markdown parser; 
 
 # Install 
 
 ``` bash
-npm i --save m-d-p 
+npm i --save down-parse 
 ```
 
 # Usage 
 
 ``` js
-const mdp = require('m-d-p')
+const mdp = require('down-parse')
     , fs = require('fs')
 
 // Read Markdown File 
