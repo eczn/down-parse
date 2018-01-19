@@ -1,6 +1,6 @@
 # down-parse 
 
-m-d-p is a markdown parser; 
+down-parse is a markdown parser; 
 
 # Install 
 
