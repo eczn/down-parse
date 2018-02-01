@@ -3,4 +3,8 @@ const parse = require('./parse')
 
 let mdp = text => render(parse(text)); 
 
+mdp.use = function(plugin){
+    // plugin.install(mdp); 
+}
+
 module.exports = mdp; 

@@ -28,6 +28,18 @@ LR.prototype.toMD = function(){
 LR.prototype.toHTML = function(){
     let { outter, tag, inner, lr } = this; 
     let { l, r } = lr; 
+    
+    if (tag !== 'code'){
+        if (/\!\[(.*?)\]\((.*?)\)/g.test(inner)){
+            inner = inner.replace(/\!\[(.*?)\]\((.*?)\)/g, (origin, insider, link) => {
+                return `<img src="${link}" alt="${insider}" />`; 
+            }); 
+        } else if (/\[(.*?)\]\((.*?)\)/g.test(inner)){
+            inner = inner.replace(/\[(.*?)\]\((.*?)\)/g, (origin, insider, link) => {
+                return `<a href="${link}">${insider}</a>`; 
+            }); 
+        }
+    }
 
     return LR.tag2html(tag)(inner)
 }
