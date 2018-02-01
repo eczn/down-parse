@@ -23,6 +23,7 @@
   "homepage": "https://github.com/eczn/down-parse#readme",
   "dependencies": {},
   "devDependencies": {
+    "markdown-it": "^8.4.0",
     "then-fs": "^2.0.0"
   }
 }

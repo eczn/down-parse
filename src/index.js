@@ -3,6 +3,9 @@ const parse = require('./parse')
 
 let mdp = text => render(parse(text)); 
 
+mdp.parse = parse; 
+mdp.render = render; 
+
 mdp.use = function(plugin){
     // plugin.install(mdp); 
 }
