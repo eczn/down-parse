@@ -31,8 +31,8 @@ console.log(html);
 3. √ `<ul>` 
 4. √ `<p>` 
 5. x `<table>`
-6. x `<a>`
-7. x `<img>`
+6. √ `<a>`
+7. √ `<img>`
 
 # License
 
