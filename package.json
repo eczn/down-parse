@@ -1,9 +1,9 @@
 {
   "name": "down-parse",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "markdown parser",
   "main": "dist/main.js",
-  "types": "dist/typings/core/index.d.ts",
+  "types": "dist/typings/index.d.ts",
   "scripts": {
     "dist": "rollup --config rollup.config.dist.js",
     "dev": "rollup -w --config rollup.config.dev.js",
