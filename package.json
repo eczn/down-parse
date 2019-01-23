@@ -2,11 +2,12 @@
   "name": "down-parse",
   "version": "1.0.0",
   "description": "markdown parser",
-  "main": "dist/down_parse.js",
+  "main": "dist/main.js",
   "types": "dist/typings/core/index.d.ts",
   "scripts": {
     "dist": "rollup --config rollup.config.dist.js",
-    "dev": "rollup -w --config rollup.config.dev.js"
+    "dev": "rollup -w --config rollup.config.dev.js",
+    "start": "npm run dev"
   },
   "author": "eczn",
   "license": "MIT",
