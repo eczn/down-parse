@@ -2,13 +2,13 @@ import typescript from 'rollup-plugin-typescript2';
 import json from 'rollup-plugin-json';
 import rimraf from "rimraf";
 import { uglify } from "rollup-plugin-uglify";
-
+import config from "./build-config"; 
 
 rimraf.sync('./dist');
 rimraf.sync('./typings');
 
-const tplserDist = {
-    input: 'src/core/index.ts',
+const dist = {
+    input: config.entry,
     plugins: [
         json(), 
         typescript({
@@ -17,28 +17,29 @@ const tplserDist = {
         uglify()
     ], 
     output: {
-        file: 'dist/tplser.dist.js', 
+        file: config.output.dist, 
         format: 'cjs'
     }
 }
 
-const tplserUMD = {
-    input: 'src/core/index.ts',
+const UMD = {
+    input: config.entry,
     plugins: [
         json(), 
         typescript({
+            // 避免 dist 重复
             tsconfigOverride: { compilerOptions: { declaration: false } }
         }), 
         uglify()
     ], 
     output: {
-        name: 'tplser', 
-        file: 'dist/tplser.UMD.min.js', 
+        name: config.name, 
+        file: config.output.umd, 
         format: 'umd'
     }
 }
 
 export default [
-    tplserDist, 
-    tplserUMD
+    dist, 
+    UMD
 ];
