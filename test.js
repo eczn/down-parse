@@ -1,31 +1,91 @@
-// test.js
-const mdp = require('./src/index')
-    , fs = require('then-fs')
-    , mark_it = require('markdown-it')();
+const Leaf = () => ({});
+const Tree = (...children) => ({ children });
 
+const countLeaves = tree => (
+	tree.children ? 
+		tree.children.reduce(
+            ((a, b) => a + countLeaves(b)), 0
+        ) : 1
+); 
 
+const sapling = Tree(Leaf()); 
 
-let text = fs.readFileSync('./test.md').toString(); 
-let N = 4096;  
+const res = countLeaves(sapling); 
+console.log(res); 
+// => 1
 
-console.log(`render ${N} times`); 
+const tree = Tree(
+    Tree(
+        Leaf(), Leaf()
+    ),
+    Tree(
+        Tree(
+            Leaf()
+        ),
+        Tree(
+            Leaf(), Leaf()
+        ),
+        Leaf()
+    )
+);
 
-console.time(`down-parse [    Cache ]`.padEnd(32));
-let syntaxes = mdp.parse(text); 
-for (let i = 0; i < N; i ++){
-    mdp.render(syntaxes); 
-}
-console.timeEnd(`down-parse [    Cache ]`.padEnd(32));
+console.log(countLeaves(tree));
+// => 6
 
-console.time(`down-parse [ No Cache ]`.padEnd(32));
-for (let i = 0; i < N; i ++){
-    mdp(text); 
-}
-console.timeEnd(`down-parse [ No Cache ]`.padEnd(32));
-
-console.time(`markdown-it`.padEnd(32));
-for (let i = 0; i < N; i ++){
-    mark_it.render(text); 
-}
-console.timeEnd(`markdown-it`.padEnd(32)); 
-
+[
+    {
+        "type": "</>",
+        "lang": "js"
+    },
+    "console.log('!');",
+    {
+        "type": "</>",
+        "lang": ""
+    },
+    "",
+    {
+        "type": "*",
+        "block": [
+            "1",
+            "2",
+            "3"
+        ]
+    },
+    "",
+    {
+        "type": ">",
+        "block": [
+            "1",
+            {
+                "type": ">",
+                "block": [
+                    "2",
+                    {
+                        "type": ">",
+                        "block": [
+                            "3"
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": 0,
+                "block": [
+                    "一行",
+                    "两行",
+                    "三行"
+                ]
+            }
+        ]
+    },
+    "",
+    {
+        "type": 0,
+        "block": [
+            "a",
+            "b",
+            "c"
+        ]
+    },
+    ""
+]
