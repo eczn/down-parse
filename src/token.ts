@@ -40,7 +40,7 @@ export function getTokenFrom(lineOne: string, WhichLine: number): Token {
         // 如果没有 Text 
         if (!text) text = '';
 
-        return { type: '#', weight, text } as HeaderToken; 
+        return { type: '#', weight, text: text.trim() } as HeaderToken; 
     } else if (/^[>-]|\* /.test(lineOne) || /^[0-9]. /.test(lineOne)) {
         // 如果是 > - * 或者有序列表  
         let [ one, ...rest ] = lineOne.split(''); 
