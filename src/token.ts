@@ -28,39 +28,38 @@ export type Token = HeaderToken | BrToken | ParaToken | CodeToken | BlockToken;
  * @param WhichLine 
  */
 export function getTokenFrom(lineOne: string, WhichLine: number): Token {
-    if (lineOne === '') {
-        return '';
-    } else {
-        if (lineOne.startsWith('#')) {
-            // '## 123'.split('#')
-            // => ['', '', ' 123']
-            // => ['', ''].length, ' 123'
-            // =>      weight       text
-            const byHashTag = lineOne.split('#');
-            const text = byHashTag.pop();
-            const weight = byHashTag.length; 
+    if (lineOne.startsWith('#')) {
+        // '## 123'.split('#')
+        // => ['', '', ' 123']
+        // => ['', ''].length, ' 123'
+        // =>      weight       text
+        const byHashTag = lineOne.split('#');
+        let text = byHashTag.pop();
+        const weight = byHashTag.length; 
 
-            // 如果没有 Text 
-            if (!text) throw new Error(`Header Parse Error, Line: ${ WhichLine }`);
+        // 如果没有 Text 
+        if (!text) text = '';
 
-            return { type: '#', weight, text } as HeaderToken; 
-        } else if (/^[>-]|\* /.test(lineOne) || /^[0-9]. /.test(lineOne)) {
-            let [ one, ...rest ] = lineOne.split(''); 
-            
-            if (!Number.isNaN(+one)) {
-                const inner = getTokenFrom(rest.slice(2).join(''), WhichLine);
-                return { type: 0, n: +one, inner } as BlockToken
-            } else {
-                if (one === '-') one = '*';
-                const inner = getTokenFrom(rest.slice(1).join(''), WhichLine);
-                return { type: one, inner, n: 0 } as BlockToken;
-            }
-        } else if (lineOne.startsWith('```')) {
-            const [, ...langTexts] = lineOne.split(' '); 
-            return { type: '</>', lang: langTexts.join('') }
+        return { type: '#', weight, text } as HeaderToken; 
+    } else if (/^[>-]|\* /.test(lineOne) || /^[0-9]. /.test(lineOne)) {
+        // 如果是 > - * 或者有序列表  
+        let [ one, ...rest ] = lineOne.split(''); 
+        
+        if (!Number.isNaN(+one)) {
+            const inner = getTokenFrom(rest.slice(2).join(''), WhichLine);
+            return { type: 0, n: +one, inner } as BlockToken
         } else {
-            return lineOne as ParaToken;
+            if (one === '-') one = '*';
+            const inner = getTokenFrom(rest.slice(1).join(''), WhichLine);
+            return { type: one, inner, n: 0 } as BlockToken;
         }
+    } else if (lineOne.startsWith('```')) {
+        // 代码块 
+        const [, ...langTexts] = lineOne.split(' '); 
+        return { type: '</>', lang: langTexts.join('') }
+    } else {
+        // 文本
+        return lineOne as ParaToken;
     }
 }
 
