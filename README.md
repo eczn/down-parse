@@ -23,6 +23,7 @@ such as:
 import { render, use } from "down-parse";
 
 use({
+    // (token: Token) => Token
     parser(token) {
         // Change The ParaAST's Property To Uppercase.
         if (token.type === 'p') {
@@ -34,6 +35,7 @@ use({
         return token;
     }, 
     
+    // (ast: AST, output: string) => string
     render(ast, output) {
         if (ast.type === 'p') {
             return output.replace('WORLD', '😊');
