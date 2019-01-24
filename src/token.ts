@@ -10,17 +10,19 @@ export type HeaderToken = GeneralToken<'#', {
 }>
 
 export type BlockToken = GeneralToken<'>' | '*' | 0, { 
-    inner: '' | BlockToken, 
+    inner: Token, 
     n: number // 序号
 }>
 
-export type ParaToken = string;
+export type ParaToken = GeneralToken<'p', {
+    text: string
+}>;;
 
 export type CodeToken = GeneralToken<'</>', {
     lang: '' | string
 }>;
 
-export type BrToken = '';
+export type BrToken = GeneralToken<'br', {}>;
 
 export type Token = HeaderToken | BrToken | ParaToken | CodeToken | BlockToken; 
 
@@ -75,11 +77,9 @@ export function getTokenFrom(lineOne: string, WhichLine: number): Token {
             lineOne
         );
     } else {
-        // 文本
-        return ctx.applyParses(
-            lineOne as ParaToken,
-            lineOne
-        );
+        return lineOne === '' ? 
+            { type: 'br' } as BrToken : 
+            { type: 'p', text: lineOne } as ParaToken;
     }
 }
 

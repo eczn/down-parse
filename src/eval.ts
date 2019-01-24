@@ -10,8 +10,10 @@ export function astEval(asts: AST[]): string {
             return t;
         }
 
-        if (typeof ast === 'string') {
+        if (ast.type === 'p') {
             return html + `<p>${ast}</p>`; 
+        } else if (ast.type === 'br') {
+            return html + `<br />`;
         } else if (ast.type === '#') {
             const { weight, text } = ast;
 

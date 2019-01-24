@@ -1,12 +1,12 @@
-import { parse, Token, CodeToken, HeaderToken, BlockToken } from "./token";
-
-export type AST_P = string; 
-
-export type AST_Br = '';
+import { parse, Token, CodeToken, HeaderToken, BlockToken, ParaToken, BrToken } from "./token";
 
 export type GeneralAST<T, Parameter> = {
     type: T
 } & Parameter;
+
+export type AST_P = ParaToken; 
+
+export type AST_Br = BrToken;
 
 export type BlockAST = GeneralAST<'>' | '*' | 0, {
     block: AST[]
@@ -28,7 +28,7 @@ export function fold(tokens: Token[]): AST[] {
     if (typeof first === 'undefined') {
         return [];
     } else if (
-        typeof first === 'string' || first.type === '#' || first.type === '</>'
+        first.type === 'br' || first.type === '#' || first.type === '</>' || first.type === 'p'
     ) {
         return [first, ...fold(rest)];
     } else {
@@ -38,7 +38,7 @@ export function fold(tokens: Token[]): AST[] {
         for (let i = 0; i < rest.length; i ++) {
             const now = rest[i]; 
 
-            if (typeof now === 'string' || first.type !== now.type) {
+            if (first.type !== now.type) {
                 break; 
             } else {
                 block.push(now);
