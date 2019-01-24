@@ -16,3 +16,23 @@ export const use = ctx.use;
 export function render(text: string) {
     return astEval(compile(text));
 }
+
+
+use({
+    parser(token) {
+        if (token.type === 'p') {
+            const { text } = token; 
+            token.text = text.toUpperCase(); 
+        }
+
+        return token;
+    }
+})
+
+const res = render(`
+# 123
+Hello, Wolrd
+`);
+
+console.log(res);
+

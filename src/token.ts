@@ -32,6 +32,8 @@ export type Token = HeaderToken | BrToken | ParaToken | CodeToken | BlockToken;
  * @param WhichLine 
  */
 export function getTokenFrom(lineOne: string, WhichLine: number): Token {
+    let ret: Token;
+
     if (lineOne.startsWith('#')) {
         // '## 123'.split('#')
         // => ['', '', ' 123']
@@ -44,11 +46,7 @@ export function getTokenFrom(lineOne: string, WhichLine: number): Token {
         // 如果没有 Text 
         if (!text) text = '';
 
-        
-        return ctx.applyParses(
-            { type: '#', weight, text: text.trim() } as HeaderToken,
-            lineOne
-        ); 
+        ret = { type: '#', weight, text: text.trim() } as HeaderToken;
     } else if (/^[>-]|\* /.test(lineOne) || /^[0-9]. /.test(lineOne)) {
         // 如果是 > - * 或者有序列表  
         let [ one, ...rest ] = lineOne.split(''); 
@@ -56,31 +54,25 @@ export function getTokenFrom(lineOne: string, WhichLine: number): Token {
         if (!Number.isNaN(+one)) {
             const inner = getTokenFrom(rest.slice(2).join(''), WhichLine);
 
-            return ctx.applyParses(
-                { type: 0, n: +one, inner } as BlockToken,
-                lineOne
-            );
+            ret = { type: 0, n: +one, inner } as BlockToken;
         } else {
             if (one === '-') one = '*';
             const inner = getTokenFrom(rest.slice(1).join(''), WhichLine);
 
-            return ctx.applyParses(
-                { type: one, inner, n: 0 } as BlockToken,
-                lineOne
-            );
+            ret = { type: one, inner, n: 0 } as BlockToken;
         }
     } else if (lineOne.startsWith('```')) {
         // 代码块 
         const [, ...langTexts] = lineOne.split(' '); 
-        return ctx.applyParses(
-            { type: '</>', lang: langTexts.join('') }, 
-            lineOne
-        );
+
+        ret = { type: '</>', lang: langTexts.join('') };
     } else {
-        return lineOne === '' ? 
+        ret = lineOne === '' ? 
             { type: 'br' } as BrToken : 
             { type: 'p', text: lineOne } as ParaToken;
     }
+
+    return ctx.applyParses(ret, lineOne);
 }
 
 function map2lines(text: string) {

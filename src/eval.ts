@@ -1,4 +1,5 @@
 import { AST } from "./compile"; 
+
 import { ctx } from "./plugin";
 
 export function astEval(asts: AST[]): string {
@@ -11,7 +12,7 @@ export function astEval(asts: AST[]): string {
         }
 
         if (ast.type === 'p') {
-            return html + `<p>${ast}</p>`; 
+            return html + `<p>${ ast.text }</p>`; 
         } else if (ast.type === 'br') {
             return html + `<br />`;
         } else if (ast.type === '#') {
