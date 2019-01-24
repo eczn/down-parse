@@ -15,7 +15,7 @@ export type TokenMiddleWare = (token: Token, origin: string) => Token;
  * When return false, runner will skip it;
  * @param AST_Node when parse '# 123' you will get 'HeaderAST'
  */
-export type RenderMiddleWare = (AST_Node: AST) => string | false; 
+export type RenderMiddleWare = (AST_Node: AST, output: string) => string; 
 
 /**
  * Your Plugin Class Should Implement This
@@ -24,4 +24,3 @@ export interface Plugin {
     parser?: TokenMiddleWare,
     render?: RenderMiddleWare
 }
-

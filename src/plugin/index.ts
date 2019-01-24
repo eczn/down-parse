@@ -1,10 +1,18 @@
 export * from "./type";
+
 import { Plugin, RenderMiddleWare, TokenMiddleWare } from "./type";
 
+/**
+ * Plugin Module
+ */
 export class PluginCtx {
+    // Render Middlewares
     renders: RenderMiddleWare[] = [];
+
+    // Token Middlewares
     parsers: TokenMiddleWare[] = [];
 
+    // Install A Plugin 
     use = (plugin: Plugin) => {
         const { parser, render } = plugin;
 
@@ -17,25 +25,23 @@ export class PluginCtx {
         }
     }
 
+    // Apply Token Middlewares 
     applyParses: TokenMiddleWare = (token, origin) => {
         return this.parsers.reduce((now, parser) => {
             return parser(now, origin);
         }, token);
     }
 
-    applyRenders: RenderMiddleWare = (AST_Node) => {
-        for (let i = 0; i < this.renders.length; i ++) {
-            const render = this.renders[i]; 
-
-            const res = render(AST_Node);
-
-            if (res !== false) {
-                return res;    
-            }
-        }
-
-        return false; 
+    // Apply Render Middlewares
+    applyRenders: RenderMiddleWare = (AST_Node, defaultOutput) => {
+        return this.renders.reduce((output, render) => {
+            return render(AST_Node, output);
+        }, defaultOutput);
     }
 } 
 
+// Export Down-Parse Plugin Context 
 export const ctx = new PluginCtx();
+
+// Alias For ctx.use
+export const use = ctx.use; 
