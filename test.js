@@ -1,91 +1,31 @@
-const Leaf = () => ({});
-const Tree = (...children) => ({ children });
+const { render, use } = require('./dist/dev');
 
-const countLeaves = tree => (
-	tree.children ? 
-		tree.children.reduce(
-            ((a, b) => a + countLeaves(b)), 0
-        ) : 1
-); 
+use({
+    parser(token) {
+        // Change The ParaAST's Property To Uppercase.
+        if (token.type === 'p') {
+            const { text } = token; 
+            token.text = text.toUpperCase(); 
+        }
 
-const sapling = Tree(Leaf()); 
+        // Don't Forget Return It. 
+        return token;
+    }, 
+    
+    render(ast, output) {
+        if (ast.type === 'p') {
+            return output.replace('WORLD', '😊');
+        } else {
+            // Keep Default Output For Other AST.
+            return output;
+        }
+    }
+});
 
-const res = countLeaves(sapling); 
-console.log(res); 
-// => 1
+const res = render(`
+# I ❤️ Plugin
+Hello, World
+`);
 
-const tree = Tree(
-    Tree(
-        Leaf(), Leaf()
-    ),
-    Tree(
-        Tree(
-            Leaf()
-        ),
-        Tree(
-            Leaf(), Leaf()
-        ),
-        Leaf()
-    )
-);
-
-console.log(countLeaves(tree));
-// => 6
-
-[
-    {
-        "type": "</>",
-        "lang": "js"
-    },
-    "console.log('!');",
-    {
-        "type": "</>",
-        "lang": ""
-    },
-    "",
-    {
-        "type": "*",
-        "block": [
-            "1",
-            "2",
-            "3"
-        ]
-    },
-    "",
-    {
-        "type": ">",
-        "block": [
-            "1",
-            {
-                "type": ">",
-                "block": [
-                    "2",
-                    {
-                        "type": ">",
-                        "block": [
-                            "3"
-                        ]
-                    }
-                ]
-            },
-            {
-                "type": 0,
-                "block": [
-                    "一行",
-                    "两行",
-                    "三行"
-                ]
-            }
-        ]
-    },
-    "",
-    {
-        "type": 0,
-        "block": [
-            "a",
-            "b",
-            "c"
-        ]
-    },
-    ""
-]
+console.log(res);
+// => '<br /><h1>I ❤️ Plugin</h1><p>HELLO, 😊</p><br />'
