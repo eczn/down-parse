@@ -1,9 +1,13 @@
 {
   "name": "down-parse",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "markdown parser",
   "main": "dist/main.js",
   "types": "dist/typings/index.d.ts",
+  "repository": {
+    "url": "https://github.com/eczn/down-parse.git",
+    "type": "git"
+  },
   "scripts": {
     "dist": "rollup --config rollup.config.dist.js",
     "dev": "rollup -w --config rollup.config.dev.js",
