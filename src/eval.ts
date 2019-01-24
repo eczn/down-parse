@@ -1,9 +1,15 @@
 import { AST } from "./compile"; 
+import { ctx } from "./plugin";
 
 export function astEval(asts: AST[]): string {
     let isInCodeCtx = false;
 
     return asts.reduce((html, ast) => {
+        const t = ctx.applyRenders(ast);
+        if (t !== false ) {
+            return t;
+        }
+
         if (typeof ast === 'string') {
             return html + `<p>${ast}</p>`; 
         } else if (ast.type === '#') {

@@ -1,3 +1,5 @@
+import { ctx } from "./plugin";
+
 export type GeneralToken<T, Parameter> = {
     type: T
 } & Parameter;
@@ -40,26 +42,44 @@ export function getTokenFrom(lineOne: string, WhichLine: number): Token {
         // 如果没有 Text 
         if (!text) text = '';
 
-        return { type: '#', weight, text: text.trim() } as HeaderToken; 
+        
+        return ctx.applyParses(
+            { type: '#', weight, text: text.trim() } as HeaderToken,
+            lineOne
+        ); 
     } else if (/^[>-]|\* /.test(lineOne) || /^[0-9]. /.test(lineOne)) {
         // 如果是 > - * 或者有序列表  
         let [ one, ...rest ] = lineOne.split(''); 
         
         if (!Number.isNaN(+one)) {
             const inner = getTokenFrom(rest.slice(2).join(''), WhichLine);
-            return { type: 0, n: +one, inner } as BlockToken
+
+            return ctx.applyParses(
+                { type: 0, n: +one, inner } as BlockToken,
+                lineOne
+            );
         } else {
             if (one === '-') one = '*';
             const inner = getTokenFrom(rest.slice(1).join(''), WhichLine);
-            return { type: one, inner, n: 0 } as BlockToken;
+
+            return ctx.applyParses(
+                { type: one, inner, n: 0 } as BlockToken,
+                lineOne
+            );
         }
     } else if (lineOne.startsWith('```')) {
         // 代码块 
         const [, ...langTexts] = lineOne.split(' '); 
-        return { type: '</>', lang: langTexts.join('') }
+        return ctx.applyParses(
+            { type: '</>', lang: langTexts.join('') }, 
+            lineOne
+        );
     } else {
         // 文本
-        return lineOne as ParaToken;
+        return ctx.applyParses(
+            lineOne as ParaToken,
+            lineOne
+        );
     }
 }
 
