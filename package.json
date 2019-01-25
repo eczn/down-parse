@@ -1,6 +1,6 @@
 {
   "name": "down-parse",
-  "version": "2.1.8",
+  "version": "2.1.9",
   "description": "markdown parser",
   "main": "dist/main.js",
   "types": "dist/typings/index.d.ts",
