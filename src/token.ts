@@ -102,8 +102,6 @@ export function getTokenFrom(lines: string[]): Token[] {
                 { type: 'p', text: lineOne, origin: lineOne } as ParaToken;
         }
 
-        console.log(ret);
-
         tokens.push(ctx.applyParses(ret, lineOne));
     }
 
