@@ -27,6 +27,42 @@ export function astEval(asts: AST[]): string {
         } else if (ast.type === '*') {
             const inner = astEval(ast.block);
             defaultOutput = `<ul>${ inner }</ul>`;
+        } else if (ast.type === '|') {
+            const { columns } = ast;
+
+            const header = columns[0];
+            const align = columns[1] || [];
+            const items = columns.slice(2);
+
+            const getAlign = (n: number) => {
+                const k = align[n].trim(); 
+                const l = k[0] === ':' ? ':' : ' ';
+                const r = k[k.length - 1] === ':' ? ':' : ' ';
+
+                return ({
+                    '::': 'center',
+                    ' :': 'right', 
+                    ': ': 'left', 
+                    '  ': 'left'
+                })[l + r];
+            }
+
+            const headerLines = `<tr>` + header.map(
+                (e, i) => `<th style="text-align: ${getAlign(i) || ''}">${e}</th>`
+            ).join('') + `</tr>`;
+
+            const bodyLines = items.map(
+                e => `<tr>` + e.map((f, i) => 
+                    `<td style="text-align: ${getAlign(i) || ''}">${ f }</td>`
+                ).join('') + `</tr>`
+            ).join('');
+
+            return [
+                `<table>`,
+                    `<thead>${ headerLines }</thead>`,
+                    `<tbody>${ bodyLines }</tbody>`,
+                `</table>`,
+            ].join('');
         } else {
             const inner = astEval(ast.block);
 

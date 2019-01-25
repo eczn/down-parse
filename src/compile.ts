@@ -1,4 +1,14 @@
-import { parse, Token, CodeToken, HeaderToken, BlockToken, ParaToken, BrToken, HrToken } from "./token";
+import {
+    parse,
+    Token,
+    BrToken,
+    HrToken,
+    ParaToken,
+    CodeToken,
+    BlockToken,
+    TableToken,
+    HeaderToken
+} from "./token";
 
 // Base AST Node Type 
 export type ParaAST     =     ParaToken; 
@@ -6,6 +16,7 @@ export type BrAST       =     BrToken;
 export type HrAST       =     HrToken;
 export type HeaderAST   =     HeaderToken;
 export type CodeAST     =     CodeToken;
+export type TableAST    =     TableToken;
 
 // AST Type Generator 
 export type GeneralAST<T, Parameter> = {
@@ -18,7 +29,7 @@ export type BlockAST = GeneralAST<'>' | '*' | 0, {
 }>;
 
 // AST Node Type
-export type AST = ParaAST | BrAST | HrAST | BlockAST | HeaderAST | CodeAST;
+export type AST = ParaAST | BrAST | HrAST | BlockAST | HeaderAST | CodeAST | TableAST;
 
 /**
  * 将 Token 转为嵌套的
@@ -34,7 +45,8 @@ export function fold(tokens: Token[]): AST[] {
         first.type === '#'   ||
         first.type === '</>' ||
         first.type === 'p'   || 
-        first.type === 'hr'
+        first.type === 'hr'  || 
+        first.type === '|'
     ) {
         return [first, ...fold(rest)];
     } else {

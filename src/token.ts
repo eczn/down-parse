@@ -17,18 +17,22 @@ export type BlockToken = GeneralToken<'>' | '*' | 0, {
 
 export type ParaToken = GeneralToken<'p', {
     text: string
-}>;;
+}>
 
 export type CodeToken = GeneralToken<'</>', {
     params: string[],
     code: string
-}>;
+}>
+
+export type TableToken = GeneralToken<'|', {
+    columns: string[][]
+}>
 
 export type HrToken = GeneralToken<'hr', {}>
 
 export type BrToken = GeneralToken<'br', {}>;
 
-export type Token = HeaderToken | BrToken | HrToken | ParaToken | CodeToken | BlockToken; 
+export type Token = HeaderToken | BrToken | HrToken | ParaToken | CodeToken | BlockToken | TableToken; 
 
 /**
  * get tokens from lines (string[])
@@ -57,6 +61,25 @@ export function getTokenFrom(lines: string[]): Token[] {
                 type: '#', weight, text: text.trim(), 
                 origin: lineOne
             } as HeaderToken;
+        } else if (lineOne.startsWith('|') && lineOne.endsWith('|')) {
+            const nexts = lines.slice(i);
+
+            let _ = 0;
+            for (_ = 0; _ < nexts.length; _ ++) {
+                const e = nexts[_]; 
+
+                if (!(e.startsWith('|') && e.endsWith('|'))) {
+                    break; 
+                }
+            }
+            
+            i = i + _ - 1;
+
+            ret = {
+                type: '|', 
+                columns: nexts.slice(0, _).map(e => e.split('|').slice(1, -1).map(e => e.trim())), 
+                // origin: [lineOne, ...nexts.slice(0, _)].join('\n')
+            } as TableToken;
         } else if (lineOne.startsWith('---') || lineOne.startsWith('***')) {
             ret = {
                 type: 'hr', origin: lineOne
