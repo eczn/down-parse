@@ -9,8 +9,11 @@ export function astEval(asts: AST[]): string {
         let defaultOutput: string;
 
         if (ast.type === 'p') {
-            defaultOutput = `<p>${ ast.text }</p>`; 
-
+            if (isInCodeCtx) {
+                return ast.text;
+            } else {
+                defaultOutput = `<p>${ ast.text }</p>`; 
+            }
         } else if (ast.type === 'br') {
             defaultOutput = `<br />`;
 
