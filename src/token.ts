@@ -19,7 +19,8 @@ export type ParaToken = GeneralToken<'p', {
 }>;;
 
 export type CodeToken = GeneralToken<'</>', {
-    lang: '' | string
+    params: string[],
+    code: string
 }>;
 
 export type BrToken = GeneralToken<'br', {}>;
@@ -31,48 +32,61 @@ export type Token = HeaderToken | BrToken | ParaToken | CodeToken | BlockToken;
  * @param lineOne 
  * @param WhichLine 
  */
-export function getTokenFrom(lineOne: string, WhichLine: number): Token {
-    let ret: Token;
+export function getTokenFrom(lines: string[]): Token[] {
+    // lineOne: string, WhichLine: number
+    const tokens: Token[] = [];
+    for (let i = 0; i < lines.length; i ++) {
+        const lineOne = lines[i];
 
-    if (lineOne.startsWith('#')) {
-        // '## 123'.split('#')
-        // => ['', '', ' 123']
-        // => ['', ''].length, ' 123'
-        // =>      weight       text
-        const byHashTag = lineOne.split('#');
-        let text = byHashTag.pop();
-        const weight = byHashTag.length; 
+        let ret: Token;
 
-        // 如果没有 Text 
-        if (!text) text = '';
+        if (lineOne.startsWith('#')) {
+            // '## 123'.split('#')
+            // => ['', '', ' 123']
+            // => ['', ''].length, ' 123'
+            // =>      weight       text
+            const byHashTag = lineOne.split('#');
+            let text = byHashTag.pop();
+            const weight = byHashTag.length; 
 
-        ret = { type: '#', weight, text: text.trim() } as HeaderToken;
-    } else if (/^[>-]|\* /.test(lineOne) || /^[0-9]. /.test(lineOne)) {
-        // 如果是 > - * 或者有序列表  
-        let [ one, ...rest ] = lineOne.split(''); 
-        
-        if (!Number.isNaN(+one)) {
-            const inner = getTokenFrom(rest.slice(2).join(''), WhichLine);
+            // 如果没有 Text 
+            if (!text) text = '';
 
-            ret = { type: 0, n: +one, inner } as BlockToken;
+            ret = { type: '#', weight, text: text.trim() } as HeaderToken;
+        } else if (/^[>-]|\* /.test(lineOne) || /^[0-9]. /.test(lineOne)) {
+            // 如果是 > - * 或者有序列表  
+            let [ one, ...rest ] = lineOne.split(''); 
+            
+            if (!Number.isNaN(+one)) {
+                const inner = getTokenFrom([rest.slice(2).join('')]);
+
+                ret = { type: 0, n: +one, inner: inner[0] } as BlockToken;
+            } else {
+                if (one === '-') one = '*';
+                const inner = getTokenFrom([rest.slice(1).join('')]);
+
+                ret = { type: one, inner: inner[0], n: 0 } as BlockToken;
+            }
+        } else if (lineOne.startsWith('```')) {
+            // 代码块 
+            const [, ...langTexts] = lineOne.split(' '); 
+
+            const nexts = lines.slice(i + 1);
+            const end = nexts.findIndex(e => e.startsWith('```'));
+
+            i = i + nexts.length + 1;
+
+            ret = { type: '</>', params: langTexts, code: nexts.slice(0, end).join('\n') };
         } else {
-            if (one === '-') one = '*';
-            const inner = getTokenFrom(rest.slice(1).join(''), WhichLine);
-
-            ret = { type: one, inner, n: 0 } as BlockToken;
+            ret = lineOne === '' ? 
+                { type: 'br' } as BrToken : 
+                { type: 'p', text: lineOne } as ParaToken;
         }
-    } else if (lineOne.startsWith('```')) {
-        // 代码块 
-        const [, ...langTexts] = lineOne.split(' '); 
 
-        ret = { type: '</>', lang: langTexts.join('') };
-    } else {
-        ret = lineOne === '' ? 
-            { type: 'br' } as BrToken : 
-            { type: 'p', text: lineOne } as ParaToken;
+        tokens.push(ctx.applyParses(ret, lineOne));
     }
 
-    return ctx.applyParses(ret, lineOne);
+    return tokens;
 }
 
 function map2lines(text: string) {
@@ -83,5 +97,20 @@ function map2lines(text: string) {
 }
 
 export function parse(text: string) {
-    return map2lines(text).map((line, idx) => getTokenFrom(line, idx)); 
+    const lines = map2lines(text);; 
+    return getTokenFrom(lines);
 }
+
+// const r = parse([
+//     `# he he he`,
+//     "``` js",
+//     "a",
+//     "b",
+//     "c", 
+//     "```",
+//     "``` asd",
+//     "12",
+//     "outter"
+// ].join('\n'));
+
+// console.log(r);

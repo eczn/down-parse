@@ -24,7 +24,11 @@ use({
 
 const res = render(`
 # I ❤️ Plugin
-Hello, World
+
+\`\`\` js
+console.log(!!!);
+\`\`\`
+
 `);
 
 console.log(res);

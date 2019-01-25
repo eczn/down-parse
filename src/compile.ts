@@ -44,7 +44,7 @@ export function fold(tokens: Token[]): AST[] {
                 block.push(now);
             }
         }
-       
+
         return [{
             type: first.type, 
             block: fold([first, ...block].map(e => e.inner))

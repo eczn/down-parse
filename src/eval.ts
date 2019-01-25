@@ -3,17 +3,11 @@ import { AST, compile } from "./compile";
 import { ctx } from "./plugin";
 
 export function astEval(asts: AST[]): string {
-    let isInCodeCtx = false;
-
     return asts.reduce((html, ast) => {
         let defaultOutput: string;
 
         if (ast.type === 'p') {
-            if (isInCodeCtx) {
-                return ast.text;
-            } else {
-                defaultOutput = `<p>${ ast.text }</p>`; 
-            }
+            defaultOutput = `<p>${ ast.text }</p>`; 
         } else if (ast.type === 'br') {
             defaultOutput = `<br />`;
 
@@ -22,11 +16,8 @@ export function astEval(asts: AST[]): string {
 
             defaultOutput = `<h${ weight }>${ text }</h${ weight }>`;
         } else if (ast.type === '</>') {
-            isInCodeCtx = !isInCodeCtx; 
-
-            defaultOutput = isInCodeCtx ? 
-                `<code lang=${ ast.lang }>` :
-                `</code>`;
+            defaultOutput = 
+                `<pre><code class="${ ast.params.join(' ') }">${ ast.code }</code></pre>`
         } else if (ast.type === 0) {
             const inner = astEval(ast.block); 
 
