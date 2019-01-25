@@ -1,22 +1,24 @@
-import { parse, Token, CodeToken, HeaderToken, BlockToken, ParaToken, BrToken } from "./token";
+import { parse, Token, CodeToken, HeaderToken, BlockToken, ParaToken, BrToken, HrToken } from "./token";
 
+// Base AST Node Type 
+export type ParaAST     =     ParaToken; 
+export type BrAST       =     BrToken;
+export type HrAST       =     HrToken;
+export type HeaderAST   =     HeaderToken;
+export type CodeAST     =     CodeToken;
+
+// AST Type Generator 
 export type GeneralAST<T, Parameter> = {
     type: T
 } & Parameter;
 
-export type AST_P = ParaToken; 
-
-export type AST_Br = BrToken;
-
+// Recursive Node 
 export type BlockAST = GeneralAST<'>' | '*' | 0, {
     block: AST[]
 }>;
 
-export type HeaderAST = HeaderToken;
-
-export type CodeAST = CodeToken;
-
-export type AST = AST_P | AST_Br | BlockAST | HeaderAST | CodeAST;
+// AST Node Type
+export type AST = ParaAST | BrAST | HrAST | BlockAST | HeaderAST | CodeAST;
 
 /**
  * 将 Token 转为嵌套的
@@ -28,7 +30,11 @@ export function fold(tokens: Token[]): AST[] {
     if (typeof first === 'undefined') {
         return [];
     } else if (
-        first.type === 'br' || first.type === '#' || first.type === '</>' || first.type === 'p'
+        first.type === 'br'  ||
+        first.type === '#'   ||
+        first.type === '</>' ||
+        first.type === 'p'   || 
+        first.type === 'hr'
     ) {
         return [first, ...fold(rest)];
     } else {
@@ -53,6 +59,10 @@ export function fold(tokens: Token[]): AST[] {
     
 }
 
-export function compile(text: string) {
+/**
+ * compile text to AST
+ * @param text 
+ */
+export function compile(text: string): AST[] {
     return fold(parse(text));
 }

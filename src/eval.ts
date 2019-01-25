@@ -22,6 +22,8 @@ export function astEval(asts: AST[]): string {
             const inner = astEval(ast.block); 
 
             defaultOutput = `<ol type="${ ast.type }">${ inner }</ol>`;
+        } else if (ast.type === 'hr') {
+            defaultOutput = `<hr />`;
         } else {
             const inner = astEval(ast.block);
             defaultOutput = `<ul type="${ ast.type }">${ inner }</ul>`;

@@ -1,7 +1,8 @@
 import { ctx } from "./plugin";
 
 export type GeneralToken<T, Parameter> = {
-    type: T
+    type: T,
+    origin: string
 } & Parameter;
 
 export type HeaderToken = GeneralToken<'#', {
@@ -23,9 +24,11 @@ export type CodeToken = GeneralToken<'</>', {
     code: string
 }>;
 
+export type HrToken = GeneralToken<'hr', {}>
+
 export type BrToken = GeneralToken<'br', {}>;
 
-export type Token = HeaderToken | BrToken | ParaToken | CodeToken | BlockToken; 
+export type Token = HeaderToken | BrToken | HrToken | ParaToken | CodeToken | BlockToken; 
 
 /**
  * 制造 Token
@@ -52,7 +55,14 @@ export function getTokenFrom(lines: string[]): Token[] {
             // 如果没有 Text 
             if (!text) text = '';
 
-            ret = { type: '#', weight, text: text.trim() } as HeaderToken;
+            ret = {
+                type: '#', weight, text: text.trim(), 
+                origin: lineOne
+            } as HeaderToken;
+        } else if (lineOne.startsWith('---') || lineOne.startsWith('***')) {
+            ret = {
+                type: 'hr', origin: lineOne
+            } as HrToken;
         } else if (/^[>-]|\* /.test(lineOne) || /^[0-9]. /.test(lineOne)) {
             // 如果是 > - * 或者有序列表  
             let [ one, ...rest ] = lineOne.split(''); 
@@ -60,12 +70,18 @@ export function getTokenFrom(lines: string[]): Token[] {
             if (!Number.isNaN(+one)) {
                 const inner = getTokenFrom([rest.slice(2).join('')]);
 
-                ret = { type: 0, n: +one, inner: inner[0] } as BlockToken;
+                ret = {
+                    type: 0, n: +one, inner: inner[0],
+                    origin: lineOne
+                } as BlockToken;
             } else {
                 if (one === '-') one = '*';
                 const inner = getTokenFrom([rest.slice(1).join('')]);
 
-                ret = { type: one, inner: inner[0], n: 0 } as BlockToken;
+                ret = {
+                    type: one, inner: inner[0], n: 0,
+                    origin: lineOne
+                } as BlockToken;
             }
         } else if (lineOne.startsWith('```')) {
             // 代码块 
@@ -76,11 +92,14 @@ export function getTokenFrom(lines: string[]): Token[] {
 
             i = i + end + 1;
 
-            ret = { type: '</>', params: langTexts, code: nexts.slice(0, end).join('\n') };
+            ret = {
+                type: '</>', params: langTexts, code: nexts.slice(0, end).join('\n'), 
+                origin: lineOne
+            };
         } else {
             ret = lineOne === '' ? 
-                { type: 'br' } as BrToken : 
-                { type: 'p', text: lineOne } as ParaToken;
+                { type: 'br', origin: lineOne } as BrToken : 
+                { type: 'p', text: lineOne, origin: lineOne } as ParaToken;
         }
 
         console.log(ret);
