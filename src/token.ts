@@ -31,12 +31,10 @@ export type BrToken = GeneralToken<'br', {}>;
 export type Token = HeaderToken | BrToken | HrToken | ParaToken | CodeToken | BlockToken; 
 
 /**
- * 制造 Token
+ * get tokens from lines (string[])
  * @param lineOne 
- * @param WhichLine 
  */
 export function getTokenFrom(lines: string[]): Token[] {
-    // lineOne: string, WhichLine: number
     const tokens: Token[] = [];
     for (let i = 0; i < lines.length; i ++) {
         const lineOne = lines[i];
@@ -115,7 +113,14 @@ function map2lines(text: string) {
         .map(e => e.trim())
 }
 
+/**
+ * parse text to tokens
+ * @param text the markdown text 
+ */
 export function parse(text: string) {
     const lines = map2lines(text);; 
-    return getTokenFrom(lines);
+    
+    const tokens = getTokenFrom(lines);
+
+    return ctx.applyAfterParsers(tokens); 
 }

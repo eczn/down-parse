@@ -1,35 +1,38 @@
 const { render, use } = require('./dist/dev');
 
 use({
-    parser(token) {
-        // Change The ParaAST's Property To Uppercase.
-        if (token.type === 'p') {
-            const { text } = token; 
-            token.text = text.toUpperCase(); 
+    afterParser(tokens, setTokens) {
+        const newTokens = [];
+        for (let i = 0; i < tokens.length - 1; i ++) {
+            const now = tokens[i];
+            const next = tokens[i + 1];
+
+            if (now.type === 'br') {
+                if (next.type !== 'br') {
+                    newTokens.push(now);
+                }
+            } else {
+                newTokens.push(now);
+            }
         }
 
-        // Don't Forget Return It. 
-        return token;
-    }, 
-    
-    render(ast, output) {
-        if (ast.type === 'p') {
-            return output.replace('WORLD', '😊');
-        } else {
-            // Keep Default Output For Other AST.
-            return output;
-        }
+        console.log(newTokens)
+        setTokens(newTokens);
     }
 });
 
 const res = render(`
 # I ❤️ Plugin
 
-\`\`\` js
-console.log(!!!);
-\`\`\`
+
+
+pppp
+
+
+p
+
 
 `);
 
-console.log(res);
+console.log('res', res);
 // => '<br /><h1>I ❤️ Plugin</h1><p>HELLO, 😊</p><br />'
