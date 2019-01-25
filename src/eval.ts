@@ -21,12 +21,16 @@ export function astEval(asts: AST[]): string {
         } else if (ast.type === 0) {
             const inner = astEval(ast.block); 
 
-            defaultOutput = `<ol type="${ ast.type }">${ inner }</ol>`;
+            defaultOutput = `<ol >${ inner }</ol>`;
         } else if (ast.type === 'hr') {
             defaultOutput = `<hr />`;
+        } else if (ast.type === '*') {
+            const inner = astEval(ast.block);
+            defaultOutput = `<ul>${ inner }</ul>`;
         } else {
             const inner = astEval(ast.block);
-            defaultOutput = `<ul type="${ ast.type }">${ inner }</ul>`;
+
+            defaultOutput = `<blockquote>${ inner }</blockquote>`
         }
 
         return html + ctx.applyRenders(ast, defaultOutput);
