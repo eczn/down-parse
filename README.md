@@ -55,6 +55,7 @@ console.log(res);
 // => '<br /><h1>I ❤️ Plugin</h1><p>HELLO, 😊</p><br />'
 ```
 
+more details see "./src/plugin/type.ts"
 
 # what about markdown Token / AST ?
 
