@@ -45,3 +45,11 @@ export const ctx = new PluginCtx();
 
 // Alias For ctx.use
 export const use = ctx.use; 
+
+/**
+ * For JS Develop
+ * @param option Plugin Option
+ */
+export function createPlugin(option: Plugin) {
+    return option;
+}
