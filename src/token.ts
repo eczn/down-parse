@@ -72,9 +72,9 @@ export function getTokenFrom(lines: string[]): Token[] {
             const [, ...langTexts] = lineOne.split(' '); 
 
             const nexts = lines.slice(i + 1);
-            const end = nexts.findIndex(e => e.startsWith('```'));
+            const end = nexts.findIndex(e => e === '```');
 
-            i = i + nexts.length + 1;
+            i = i + end + 1;
 
             ret = { type: '</>', params: langTexts, code: nexts.slice(0, end).join('\n') };
         } else {
@@ -82,6 +82,8 @@ export function getTokenFrom(lines: string[]): Token[] {
                 { type: 'br' } as BrToken : 
                 { type: 'p', text: lineOne } as ParaToken;
         }
+
+        console.log(ret);
 
         tokens.push(ctx.applyParses(ret, lineOne));
     }
@@ -100,17 +102,3 @@ export function parse(text: string) {
     const lines = map2lines(text);; 
     return getTokenFrom(lines);
 }
-
-// const r = parse([
-//     `# he he he`,
-//     "``` js",
-//     "a",
-//     "b",
-//     "c", 
-//     "```",
-//     "``` asd",
-//     "12",
-//     "outter"
-// ].join('\n'));
-
-// console.log(r);
